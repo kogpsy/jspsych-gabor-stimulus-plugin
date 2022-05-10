@@ -1,0 +1,29 @@
+{
+  "name": "@kogpsy/jspsych-library-template",
+  "description": "A template TypeScript library to build apon.",
+  "version": "1.0.0",
+  "main": "dist/jspsych-library-template.js",
+  "author": "Robin Bürkli <robuba.jr@gmx.ch>",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/jest": "^27.5.0",
+    "@types/node": "^17.0.31",
+    "jest": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.0",
+    "prettier": "2.6.2",
+    "rollup": "^2.72.1",
+    "rollup-plugin-ts": "^2.0.7",
+    "ts-jest": "^28.0.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  },
+  "scripts": {
+    "build": "rollup --config",
+    "fmt": "prettier --write .",
+    "test": "jest"
+  },
+  "packageManager": "yarn@3.1.1"
+}
