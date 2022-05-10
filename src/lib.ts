@@ -7,6 +7,9 @@
  * This is the entrypoint to the library.
  */
 
-export {generateNoise, generateNoiseFrames} from './NoiseGen'
+import GaborStimulusPlugin from './GaborStimulusPlugin';
+import { ProvidedConfig as GaborStimulusPluginConfig } from './ConfigParser';
 
-export const HELLO_CONSUMER: string = 'Hello consumer!';
+export { generateNoise, generateNoiseFrames } from './NoiseGen';
+export { GaborStimulusPluginConfig };
+export default GaborStimulusPlugin;
