@@ -5,11 +5,12 @@ export default [
     input: 'src/lib.ts',
     output: [
       {
-        name: 'jspsych-library-template',
-        file: 'dist/jspsych-library-template.js',
+        name: 'jspsych-gabor-stimulus-plugin',
+        file: 'dist/jspsych-gabor-stimulus-plugin.js',
         format: 'es',
       },
     ],
+    external: ['jspsych'],
     plugins: [ts()],
   },
 ];
