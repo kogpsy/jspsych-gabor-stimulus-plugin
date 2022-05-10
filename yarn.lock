@@ -861,12 +861,15 @@ __metadata:
     "@types/node": ^17.0.31
     jest: ^28.1.0
     jest-environment-jsdom: ^28.1.0
+    jspsych: ^7.2.1
     prettier: 2.6.2
     rollup: ^2.72.1
     rollup-plugin-ts: ^2.0.7
     ts-jest: ^28.0.2
     ts-node: ^10.7.0
     typescript: ^4.6.4
+  peerDependencies:
+    jspsych: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -1353,6 +1356,13 @@ __metadata:
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
   checksum: 7b78c451df768adba04e2d02e63e2d0bf3b07adcd6e42b4cf665cb7ce899bedd344c69a1dcbce355b5f972d597b25aaa1c1742b52cffd9caccb22f348114f6be
+  languageName: node
+  linkType: hard
+
+"auto-bind@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "auto-bind@npm:4.0.0"
+  checksum: 00cad71cce5742faccb7dd65c1b55ebc4f45add4b0c9a1547b10b05bab22813230133b0c892c67ba3eb969a4524710c5e43cc45c72898ec84e56f3a596e7a04f
   languageName: node
   linkType: hard
 
@@ -3159,6 +3169,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jspsych@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "jspsych@npm:7.2.1"
+  dependencies:
+    auto-bind: ^4.0.0
+    random-words: ^1.1.1
+    seedrandom: ^3.0.5
+  checksum: 1ceb50abe7bafb281a03abbe07fa766740d88e8dc8f9d6fb6321eae49c2339ed387346b80d71ea5f31cdb61158ae12c61e28d77a5468427d2ffdeb800bc3a12c
+  languageName: node
+  linkType: hard
+
 "kleur@npm:^3.0.3":
   version: 3.0.3
   resolution: "kleur@npm:3.0.3"
@@ -3764,6 +3785,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"random-words@npm:^1.1.1":
+  version: 1.1.2
+  resolution: "random-words@npm:1.1.2"
+  checksum: 3692ec439a983046541efa6a26801a6cd900650b6bfd305e4d57f3f1f28ff5937778514545e020ec486c981e227a7b703f8db3f6b7a9adce519252ed86b60146
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^17.0.1":
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
@@ -3944,6 +3972,13 @@ __metadata:
   dependencies:
     xmlchars: ^2.2.0
   checksum: 5636b55cf15f7cf0baa73f2797bf992bdcf75d1b39d82c0aa4608555c774368f6ac321cb641fd5f3d3ceb87805122cd47540da6a7b5960fe0dbdb8f8c263f000
+  languageName: node
+  linkType: hard
+
+"seedrandom@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "seedrandom@npm:3.0.5"
+  checksum: 728b56bc3bc1b9ddeabd381e449b51cb31bdc0aa86e27fcd0190cea8c44613d5bcb2f6bb63ed79f78180cbe791c20b8ec31a9627f7b7fc7f476fd2bdb7e2da9f
   languageName: node
   linkType: hard
 
