@@ -7,4 +7,6 @@
  * This is the entrypoint to the library.
  */
 
+export {generateNoise, generateNoiseFrames} from './NoiseGen'
+
 export const HELLO_CONSUMER: string = 'Hello consumer!';
