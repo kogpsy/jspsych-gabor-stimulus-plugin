@@ -81,6 +81,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // when setting the new elements using innerHTML(), but not append.
     const tmpParent = document.createElement('div');
     tmpParent.appendChild(container);
+
     // Then update the DOM
     display_element.innerHTML = tmpParent.innerHTML;
 
@@ -113,57 +114,83 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
   }
 }
 
+/**
+ * Sets up the background of the stimulus based on the plugin configuration
+ *
+ * @param config Configuration of the plugin
+ * @returns An object containing the background container as an HTMLDivElement
+ * and if an animation was requested an AnimationLoop object (which can be used
+ * to start and stop the animation)
+ */
 const setUpBackground = (
   config: InternalConfig
 ): {
   backgroundContainer: HTMLDivElement;
-  animationCanvas?: HTMLCanvasElement;
   animationLoop?: AnimationLoop;
 } => {
+  // Create background container div and add css
   const backgroundContainer = document.createElement('div');
-  backgroundContainer.style['position'] = 'absolute';
-  backgroundContainer.style['left'] = '0';
-  backgroundContainer.style['top'] = '0';
-  backgroundContainer.style['width'] = '100%';
-  backgroundContainer.style['height'] = '100%';
+  backgroundContainer.style.position = 'absolute';
+  backgroundContainer.style.left = '0';
+  backgroundContainer.style.top = '0';
+  backgroundContainer.style.width = '100%';
+  backgroundContainer.style.height = '100%';
 
+  // If the requested background is an animation
   if (config.background.type === 'animation') {
+    // Set up the animation loop and canvas
     const { canvas, animationLoop } = setUpAnimationCanvas(
       config.background.frames,
       config.background.fps
     );
-
+    // And add the canvas to the background container
     backgroundContainer.appendChild(canvas);
 
+    // Return container and loop object
     return {
       backgroundContainer,
-      animationCanvas: canvas,
       animationLoop,
     };
-  } else if (config.background.type === 'css-color') {
-    backgroundContainer.style.backgroundColor = config.background.color;
+  }
 
+  // If the requested background is a css color, set it accordingly
+  else if (config.background.type === 'css-color') {
+    backgroundContainer.style.backgroundColor = config.background.color;
     return {
       backgroundContainer,
     };
-  } else if (config.background.type === 'image') {
-    backgroundContainer.style.backgroundImage = `url("${config.background.source}")`;
+  }
 
+  // If the requested background is a static image, set it accordingly
+  else if (config.background.type === 'image') {
+    backgroundContainer.style.backgroundImage = `url("${config.background.source}")`;
     return { backgroundContainer };
   }
 };
 
+/**
+ * Creates an HTMLCanvasElement and an AnimationLoop instance based on params
+ *
+ * @param frames An array of data urls / paths which will be used as the frames
+ * of the animation
+ * @param fps Speed of the animation (frames per second)
+ * @returns An object containing an HTMLCanvasElement and an AnimationLoop
+ * instance to start and stop the animation
+ */
 const setUpAnimationCanvas = (
   frames: string[],
   fps: number
 ): { canvas: HTMLCanvasElement; animationLoop: AnimationLoop } => {
-  // Create the canvas for the background rendering (if animation)
+  // Create the canvas to render the frames on
   const canvas = document.createElement('canvas');
   canvas.id = 'circular-sine-stimulus-background';
 
+  // Declare variables used in the animation function
   let frameIndex: number;
   let newFrameIndex: number;
 
+  // Define the animation function (will be called by the AnimationLoop at a
+  // certain FPS)
   const animationFunction = () => {
     // For some reason the canvas element created above is undefined at this
     // point of the code lifecycle. I don't understand why, but retrieving the
@@ -172,31 +199,43 @@ const setUpAnimationCanvas = (
       document.getElementById('circular-sine-stimulus-background')
     );
 
+    // Choose the next frame randomly until it is not the same frame as the
+    // currently displayed
     do {
       newFrameIndex = Math.floor(Math.random() * frames.length);
     } while (newFrameIndex === frameIndex);
     frameIndex = newFrameIndex;
 
-    // @ts-ignore
+    // Instanciate the image object which will be rendered onto the canvas
     const image = new Image();
     image.src = frames[frameIndex];
 
+    // Set canvas size to image size
     canvas.height = image.naturalHeight;
     canvas.width = image.naturalWidth;
+    // And draw the image
     canvas.getContext('2d').drawImage(image, 0, 0);
   };
 
+  // Instanciate the animation loop object and start the loop
   const animationLoop = new AnimationLoop(fps, animationFunction);
   animationLoop.startLoop();
 
+  // Return the canvas and the animation loop handle
   return {
     canvas,
     animationLoop,
   };
 };
 
-// Create a container for the svg
-const setUpContainer = (size: number): HTMLElement => {
+/**
+ * Creates an HTMLDivElement to be used as the stimulus and background
+ * container based on the requested stimulus size
+ *
+ * @param size Size of the container
+ * @returns The container as an HTMLDivElement
+ */
+const setUpContainer = (size: number): HTMLDivElement => {
   const container = document.createElement('div');
   container.id = 'circular-sine-stimulus-container';
   container.style['position'] = 'relative';
