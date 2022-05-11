@@ -4,7 +4,81 @@ This project aims to provide a jsPsych plugin for generating gabor patch stimuli
 
 ## How to use
 
-- TODO: write
+### TypeScript example
+
+```typescript
+// Import plugin and config type
+import GaborStimulusPlugin, {
+  GaborStimulusPluginConfig,
+} from '@kogpsy/jspsych-gabor-stimulus-plugin';
+
+// ...
+
+// Define configuration object
+const gaborConf: GaborStimulusPluginConfig = {
+  stimulus: {
+    size: 200,
+    rotation: 45,
+  },
+  fixationCross: {
+    size: 20,
+    weight: 4,
+    color: 'white',
+  },
+};
+
+// Push the plugin to the timeline
+timeline.push({
+  type: GaborStimulusPlugin,
+  config: gaborConf,
+});
+```
+
+This will provide the following result:
+
+![Stimulus Example](static/stimulus_example.png)
+
+If you want to use the plugin with plain JavaScript, simply don't import the config type and omit the type assignment by changing the first line of the config definition from:
+
+```typescript
+const gaborConf: GaborStimulusPluginConfig = {
+```
+
+to:
+
+```javascript
+const gaborConf = {
+```
+
+### Configuration reference
+
+The configuration object allows broad control over how the gabor patch generated. You can control the stimulus itself using the `stimulus` key, the aperture using the `aperture` key, the background using the `background` key, a possible fixation cross using the `fixationCross` key and the possible keyboard responses using the `choices` key:
+
+```typescript
+const conf: GaborStimulusPluginConfig = {
+  stimulus: {
+    // ...
+  },
+  aperture: {
+    // ...
+  }
+  background: {
+    // ...
+  }
+  fixationCross: {
+    // ...
+  },
+  choices: [/* ... */]
+};
+```
+
+Each of these keys takes an object which is explored in the following.
+
+**`stimulus`**
+
+You can control the stimulus using the following fields:
+
+TODO: md table presenting all possible keys and defaults
 
 ## Development
 
