@@ -34,7 +34,7 @@ timeline.push({
 });
 ```
 
-This will provide the following result:
+This will produce the following result:
 
 ![Stimulus Example](static/stimulus_example.png)
 
