@@ -7,7 +7,10 @@
  * License: GPL-3.0
  */
 
-// Define provided config type
+/**
+ * Type for the provided configuration. Can be used by consumers for
+ * autocompletion and robustness purposes.
+ */
 export type ProvidedConfig = {
   stimulus?: {
     size?: number;
@@ -38,7 +41,10 @@ export type ProvidedConfig = {
   choices?: string[];
 };
 
-// Define internal config type
+/**
+ * Type for the internal, complete configuration. The provided configuration
+ * will be parsed into this form.
+ */
 export type InternalConfig = {
   stimulus: {
     size: number;
@@ -69,108 +75,126 @@ export type InternalConfig = {
   choices: string[];
 };
 
+// Defaults
+
+// Stimulus defaults
+const DEFAULT_STMIULUS_SIZE = 200;
+const DEFAULT_STIMULUS_DENSITY = 5;
+const DEFAULT_STIMULUS_PHASE_OFFSET = 0;
+const DEFAULT_STIMULUS_OPACITY = 1;
+const DEFAULT_STIMULUS_ROTATION = 0;
+const DEFAULT_STIMULUS_BLEND_MODE = 'normal';
+
+// Aperture defaults
+const DEFAULT_APERTURE_RADIUS = DEFAULT_STMIULUS_SIZE / 4;
+const DEFAULT_APERTURE_BLUR = DEFAULT_STMIULUS_SIZE / 8;
+
+// Background defaults
+const DEFAULT_BACKGROUND_TYPE = 'css-color';
+const DEFAULT_BACKGROUND_COLOR = 'transparent';
+const DEFAULT_BACKGROUND_ANIMATION_FPS = 60;
+
+// Choices default
+const DEFAULT_CHOICES = [' '];
+
 /**
  * Takes a possibly incomplete config and fills in defaults where necessary
  *
- * @param config The config provided by consumer
+ * @param providedConfig The config provided by consumer
  * @returns A config filled with defaults where necessary
  */
-export const parseConfig = (config: ProvidedConfig): InternalConfig => {
+export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
   // Define result object with defaults
+  let parsedConfig: InternalConfig = {
+    stimulus: {
+      size: DEFAULT_STMIULUS_SIZE,
+      density: DEFAULT_STIMULUS_DENSITY,
+      phaseOffset: DEFAULT_STIMULUS_PHASE_OFFSET,
+      opacity: DEFAULT_STIMULUS_OPACITY,
+      rotation: DEFAULT_STIMULUS_ROTATION,
+      blendMode: DEFAULT_STIMULUS_BLEND_MODE,
+    },
+    aperture: {
+      radius: DEFAULT_APERTURE_RADIUS,
+      blur: DEFAULT_APERTURE_BLUR,
+    },
+    background: {
+      type: DEFAULT_BACKGROUND_TYPE,
+      color: DEFAULT_BACKGROUND_COLOR,
+    },
+    choices: DEFAULT_CHOICES,
+  };
 
-  // TODO: set defaults if empty conf object was provided
-  let parsedConfig: InternalConfig;
-
-  // Destructure provided config
-  const { stimulus, aperture, background, choices } = config;
+  // Then override if values are provided
 
   // Parse stimulus config
-  if (stimulus) {
-    // Destructure provided stimulus config
-    const { size, density, phaseOffset, opacity, rotation, blendMode } =
-      stimulus;
-
-    if (size) {
-      parsedConfig.stimulus.size = size;
-    } else {
-      parsedConfig.stimulus.size = 200;
+  if (providedConfig.stimulus) {
+    // Override stimulus size if provided
+    if (providedConfig.stimulus.size) {
+      parsedConfig.stimulus.size = providedConfig.stimulus.size;
     }
-
-    if (density) {
-      parsedConfig.stimulus.density = density;
-    } else {
-      parsedConfig.stimulus.density = 5;
+    // Override stimulus density if provided
+    if (providedConfig.stimulus.density) {
+      parsedConfig.stimulus.density = providedConfig.stimulus.density;
     }
-
-    if (phaseOffset) {
-      parsedConfig.stimulus.phaseOffset = phaseOffset;
-    } else {
-      parsedConfig.stimulus.phaseOffset = 0;
+    // Override stimulus phase offset if provided
+    if (providedConfig.stimulus.phaseOffset) {
+      parsedConfig.stimulus.phaseOffset = providedConfig.stimulus.phaseOffset;
     }
-
-    if (opacity) {
-      parsedConfig.stimulus.opacity = opacity;
-    } else {
-      parsedConfig.stimulus.opacity = 1;
+    // Override stimulus opacity if provided
+    if (providedConfig.stimulus.opacity) {
+      parsedConfig.stimulus.opacity = providedConfig.stimulus.opacity;
     }
-
-    if (rotation) {
-      parsedConfig.stimulus.rotation = rotation;
-    } else {
-      parsedConfig.stimulus.rotation = 0;
+    // Override stimulus rotation if provided
+    if (providedConfig.stimulus.rotation) {
+      parsedConfig.stimulus.rotation = providedConfig.stimulus.rotation;
     }
-
-    if (blendMode) {
-      parsedConfig.stimulus.blendMode = blendMode;
-    } else {
-      parsedConfig.stimulus.blendMode = 'normal';
+    // Override stimulus blend mode if provided
+    if (providedConfig.stimulus.blendMode) {
+      parsedConfig.stimulus.blendMode = providedConfig.stimulus.blendMode;
     }
   }
 
   // Parse apperture config
-  if (aperture) {
-    // Destructure provided aperture config
-    const { radius, blur } = aperture;
-
-    if (radius) {
-      parsedConfig.aperture.radius = radius;
-    } else {
-      parsedConfig.aperture.radius = parsedConfig.stimulus.size / 4;
+  if (providedConfig.aperture) {
+    // Override aperture radius if provided
+    if (providedConfig.aperture.radius) {
+      parsedConfig.aperture.radius = providedConfig.aperture.radius;
     }
-    if (blur) {
-      parsedConfig.aperture.blur = blur;
-    } else {
-      parsedConfig.aperture.blur = parsedConfig.stimulus.size / 8;
+    // Override aperture blur if provided
+    if (providedConfig.aperture.blur) {
+      parsedConfig.aperture.blur = providedConfig.aperture.blur;
     }
   }
 
   // Parse choices config
-  if (choices) {
-    parsedConfig.choices = choices;
-  } else {
-    parsedConfig.choices = [' '];
+  if (providedConfig.choices) {
+    // Override choices if provided
+    parsedConfig.choices = providedConfig.choices;
   }
 
   // Parse background config
-  if (background) {
-    if (background.type === 'animation') {
-      const fps = background.fps ? background.fps : 60;
+  if (providedConfig.background) {
+    if (providedConfig.background.type === 'animation') {
+      // If an animation was requested as background, check if FPS field was
+      // provided, otherwise set to default.
+      const fps = providedConfig.background.fps
+        ? providedConfig.background.fps
+        : DEFAULT_BACKGROUND_ANIMATION_FPS;
+      // Then construct background config object for internal config
       parsedConfig.background = {
         type: 'animation',
-        frames: background.frames,
+        frames: providedConfig.background.frames,
         fps: fps,
       };
-    } else if (background.type === 'css-color') {
-      parsedConfig.background = background;
-    } else if (background.type === 'image') {
-      parsedConfig.background = background;
+    } else if (providedConfig.background.type === 'css-color') {
+      // If a color was requested as background, set it accordingly
+      parsedConfig.background = providedConfig.background;
+    } else if (providedConfig.background.type === 'image') {
+      // If an image was requested as background, set it accordingly
+      parsedConfig.background = providedConfig.background;
     }
-  } else {
-    parsedConfig.background = {
-      type: 'css-color',
-      color: 'transparent',
-    };
   }
-
+  // Return the result
   return parsedConfig;
 };
