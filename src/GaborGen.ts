@@ -19,9 +19,9 @@ export const generateGabor = (
   phaseOffset: number,
   opacity: number,
   rotation: number,
+  blendMode: string,
   apertureRadius: number,
-  apertureBlur: number,
-  blendMode: string
+  apertureBlur: number
 ): HTMLElement => {
   // Create the main svg element and set size
   const svg = document.createElement('svg');

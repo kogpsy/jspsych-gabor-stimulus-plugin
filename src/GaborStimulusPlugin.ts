@@ -12,7 +12,6 @@ import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from 'jspsych';
 import AnimationLoop from './AnimationLoop';
 import { InternalConfig, parseConfig } from './ConfigParser';
 import { generateGabor } from './GaborGen';
-import { ProvidedConfig } from './ConfigParser';
 
 // Define plugin info
 const info: any = <const>{
@@ -38,10 +37,12 @@ type Info = typeof info;
  * @see {@link https://github.com/kogpsy/jspsych-circular-sine-stimulus-plugin Documentation}
  */
 class GaborStimulusPlugin implements JsPsychPlugin<Info> {
+  // Add static info
   static info = info;
 
   // Constructor
   constructor(private jsPsych: JsPsych) {
+    // Bind jsPsych instance
     this.jsPsych = jsPsych;
   }
 
@@ -49,6 +50,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // First clear the display element
     display_element.innerHTML = '';
 
+    // Parse the provided config into a consistent format
     const config: InternalConfig = parseConfig(trial.config);
 
     // Create the container for everything
@@ -61,9 +63,9 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
       config.stimulus.density,
       config.stimulus.opacity,
       config.stimulus.rotation,
+      config.stimulus.blendMode,
       config.aperture.radius,
-      config.aperture.blur,
-      config.stimulus.blendMode
+      config.aperture.blur
     );
 
     // Add SVG to container
