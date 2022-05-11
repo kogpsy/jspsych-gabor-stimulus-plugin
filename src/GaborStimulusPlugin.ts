@@ -11,6 +11,7 @@
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from 'jspsych';
 import AnimationLoop from './AnimationLoop';
 import { InternalConfig, parseConfig } from './ConfigParser';
+import { generateFixationCross } from './FixationCrossGen';
 import { generateGabor } from './GaborGen';
 
 // Define plugin info
@@ -76,6 +77,17 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
 
     // Add canvas to container
     container.appendChild(backgroundContainer);
+
+    // Add fixation cross if requested
+    if (config.fixationCross.display) {
+      const fixationCross = generateFixationCross(
+        config.stimulus.size,
+        config.fixationCross.size,
+        config.fixationCross.weight,
+        config.fixationCross.color
+      );
+      container.appendChild(fixationCross);
+    }
 
     // Create a temporary parent div, since the DOM only seems to get updated
     // when setting the new elements using innerHTML(), but not append.

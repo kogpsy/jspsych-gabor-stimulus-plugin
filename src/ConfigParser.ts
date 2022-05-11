@@ -38,6 +38,11 @@ export type ProvidedConfig = {
         type: 'image';
         source: string;
       };
+  fixationCross?: {
+    size?: number;
+    weight?: number;
+    color?: string;
+  };
   choices?: string[];
 };
 
@@ -72,6 +77,12 @@ export type InternalConfig = {
         type: 'image';
         source: string;
       };
+  fixationCross: {
+    display: boolean;
+    size: number;
+    weight: number;
+    color: string;
+  };
   choices: string[];
 };
 
@@ -93,6 +104,12 @@ const DEFAULT_APERTURE_BLUR = DEFAULT_STMIULUS_SIZE / 8;
 const DEFAULT_BACKGROUND_TYPE = 'css-color';
 const DEFAULT_BACKGROUND_COLOR = 'transparent';
 const DEFAULT_BACKGROUND_ANIMATION_FPS = 60;
+
+// Fixation defaults
+const DEFAULT_FIXATION_DISPLAY = false;
+const DEFAULT_FIXATION_SIZE = 30;
+const DEFAULT_FIXATION_WEIGHT = 5;
+const DEFAULT_FIXATION_COLOR = 'white';
 
 // Choices default
 const DEFAULT_CHOICES = [' '];
@@ -121,6 +138,12 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
     background: {
       type: DEFAULT_BACKGROUND_TYPE,
       color: DEFAULT_BACKGROUND_COLOR,
+    },
+    fixationCross: {
+      display: DEFAULT_FIXATION_DISPLAY,
+      size: DEFAULT_FIXATION_SIZE,
+      weight: DEFAULT_FIXATION_WEIGHT,
+      color: DEFAULT_FIXATION_COLOR,
     },
     choices: DEFAULT_CHOICES,
   };
@@ -171,6 +194,24 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
   if (providedConfig.choices) {
     // Override choices if provided
     parsedConfig.choices = providedConfig.choices;
+  }
+
+  // Parse fixation cross config
+  if (providedConfig.fixationCross) {
+    // Override display
+    parsedConfig.fixationCross.display = true;
+    // Override fixation cross size if provided
+    if (providedConfig.fixationCross.size) {
+      parsedConfig.fixationCross.size = providedConfig.fixationCross.size;
+    }
+    // Override fixation cross weight if provided
+    if (providedConfig.fixationCross.weight) {
+      parsedConfig.fixationCross.weight = providedConfig.fixationCross.weight;
+    }
+    // Override fixation cross color if provided
+    if (providedConfig.fixationCross.color) {
+      parsedConfig.fixationCross.color = providedConfig.fixationCross.color;
+    }
   }
 
   // Parse background config
