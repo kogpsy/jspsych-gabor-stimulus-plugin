@@ -67,7 +67,7 @@ const conf: GaborStimulusPluginConfig = {
 
 Each of these keys takes an object which is explored in the following.
 
-**`stimulus`**
+#### `stimulus`
 
 The stimulus itself consists of alternating white and black lines. The transitions between the colors are smooth and follow a sinusoidal curve.
 
@@ -82,7 +82,7 @@ You can control the appearance of the stimulus using a multitude of parameters:
 | `rotation`    | Rotation of the gabor patch                                        | Degrees (0 to 359)     | `number` | `0`        |
 | `blendMode`   | [CSS blend mode][1] used to blend the stimulus onto the background | Blend mode name        | `string` | `"normal"` |
 
-**`aperture`**
+#### `aperture`
 
 The stimulus above is rendered using a square-shaped SVG element. A traditional gabor patch is circular with smooth edges. This is achieved using an aperture and blurring it.
 
@@ -93,7 +93,7 @@ You can control the aperture radius and blur using these parameters:
 | `radius` | Radius of the circular aperture                                    | Pixels                             | `number` | `stimulus.size / 4` |
 | `blur`   | Blur strength applied to the aperture using a Gaussian blur filter | Standard deviation of the gaussian | `number` | `stimulus.size / 8` |
 
-**`fixationCross`**
+#### `fixationCross`
 
 There is the possibility to display a fixation cross in the middle of the stimulus. To do so, add a `fixationCross`key to the configuration object.
 
@@ -105,7 +105,7 @@ You can also control how it looks with the following parameters:
 | `weight` | Weight of the fixation cross lines     | Pixels              | `number` | `5`       |
 | `color`  | Color of the fixation cross            | Any valid css color | `string` | `"white"` |
 
-**`background`**
+#### `background`
 
 There are different background types available. You can control the type by setting the value uf the `type` key on the background object to one of the strings shown below. Depending on the type, different, further configuration options are available.
 
@@ -136,7 +136,11 @@ _`type: "animation"`_
 | `frames` | Frames of the animation | Either paths or a data urls | Yes      | `string[]` | `undefined` |
 | `fps`    | Speed of the animation  | Frames per second           | No       | `number`   | `60`        |
 
-**`timing`**
+#### `timing`
+
+The timing of the stimulus and trial is pretty flexible. Stimulus timing corresponds to how long the stimulus itself (gabor patch and background) is displayed, while trial timing corresponds to how long responses are captured.
+
+These options are available:
 
 | Field               | Description                                                       | Unit                                               | Type      | Default |
 | ------------------- | ----------------------------------------------------------------- | -------------------------------------------------- | --------- | ------- |
@@ -144,7 +148,7 @@ _`type: "animation"`_
 | `trialDuration`     | Time after which the trial is ended                               | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
 | `responseEndsTrial` | Controls whether the trial is ended when the participant responds | Boolean                                            | `boolean` | `true`  |
 
-**`choices`**
+#### `choices`
 
 The plugin is capable of capturing keyboard responses. To control allowed keys, the `choices` array is used. To allow the `F` and the `J` keys, for example, set the value of the `choices` key like that:
 
