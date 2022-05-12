@@ -42,7 +42,7 @@ There is a type available for the configuration object which is exported as `Gab
 
 ### Configuration reference
 
-The configuration object allows broad control over how the gabor patch generated. You can control the stimulus itself using the `stimulus` key, the aperture using the `aperture` key, the background using the `background` key, a possible fixation cross using the `fixationCross` key and the possible keyboard responses using the `choices` key:
+The configuration object allows broad control over how the gabor patch generated. You can control the stimulus itself using the `stimulus` key, the aperture using the `aperture` key, the background using the `background` key, a possible fixation cross using the `fixationCross` key, stimulus timing using the `timing` key and the possible keyboard responses using the `choices` key:
 
 ```typescript
 const conf: GaborStimulusPluginConfig = {
@@ -56,6 +56,9 @@ const conf: GaborStimulusPluginConfig = {
     // ...
   }
   fixationCross: {
+    // ...
+  },
+  timing: {
     // ...
   },
   choices: [/* ... */]
@@ -89,17 +92,6 @@ You can control the aperture radius and blur using these parameters:
 | -------- | ------------------------------------------------------------------ | ---------------------------------- | -------- | ------------------- |
 | `radius` | Radius of the circular aperture                                    | Pixels                             | `number` | `stimulus.size / 4` |
 | `blur`   | Blur strength applied to the aperture using a Gaussian blur filter | Standard deviation of the gaussian | `number` | `stimulus.size / 8` |
-
-**`choices`**
-
-The plugin is capable of capturing keyboard responses. To control allowed keys, the `choices` array is used. To allow the `F` and the `J` keys, for example, set the value of the `choices` key like that:
-
-```javascript
-const conf = {
-  //...
-  choices: ['f', 'j'],
-};
-```
 
 **`fixationCross`**
 
@@ -144,6 +136,34 @@ _`type: "animation"`_
 | `frames` | Frames of the animation | Either paths or a data urls | Yes      | `string[]` | `undefined` |
 | `fps`    | Speed of the animation  | Frames per second           | No       | `number`   | `60`        |
 
+**`timing`**
+
+| Field               | Description                                                       | Unit                                               | Type      | Default |
+| ------------------- | ----------------------------------------------------------------- | -------------------------------------------------- | --------- | ------- |
+| `stimulusDuration`  | Time during which the stimulus is displayed                       | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
+| `trialDuration`     | Time after which the trial is ended                               | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
+| `responseEndsTrial` | Controls whether the trial is ended when the participant responds | Boolean                                            | `boolean` | `true`  |
+
+**`choices`**
+
+The plugin is capable of capturing keyboard responses. To control allowed keys, the `choices` array is used. To allow the `F` and the `J` keys, for example, set the value of the `choices` key like that:
+
+```javascript
+const conf = {
+  // Your other options
+  // ...
+
+  // Set choices
+  choices: ['f', 'j'],
+};
+```
+
+As for valid key codes, this plugin follows the conventions of other jsPsych plugins. The [jsPsych documentation on the KeyBoardResponsePlugin][2] states the following:
+
+> Keys should be specified as characters (e.g., `'a'`, `'q'`, `' '`, `'Enter'`, `'ArrowDown'`) - see [this page][3] and [this page][4] (event.key column) for more examples.
+
+Per default, no keys are allowed.
+
 ### A more complete example
 
 This is a more complete example demonstrating how to use many of the options discussed above. The `backgroundFrames` array is generated using the integrated background noise generator (see below).
@@ -172,6 +192,8 @@ const gaborConf = {
     weight: 5,
     color: 'white',
   },
+  choices: [' '], // Space key
+  timing: {},
 };
 ```
 
@@ -208,3 +230,6 @@ The following data are collected:
 - `rt`: The reaction time
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode
+[2]: https://www.jspsych.org/7.2/plugins/html-keyboard-response/
+[3]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+[4]: https://www.freecodecamp.org/news/javascript-keycode-list-keypress-event-key-codes/
