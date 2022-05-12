@@ -230,7 +230,12 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       };
     } else if (providedConfig.background.type === 'css-color') {
       // If a color was requested as background, set it accordingly
-      parsedConfig.background = providedConfig.background;
+      parsedConfig.background = {
+        type: 'css-color',
+        color: providedConfig.background.color
+          ? providedConfig.background.color
+          : 'transparent',
+      };
     } else if (providedConfig.background.type === 'image') {
       // If an image was requested as background, set it accordingly
       parsedConfig.background = providedConfig.background;
