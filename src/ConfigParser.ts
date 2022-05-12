@@ -44,6 +44,11 @@ export type ProvidedConfig = {
     color?: string;
   };
   choices?: string[];
+  timing?: {
+    stimulusDuration?: number;
+    trialDuration?: number;
+    responseEndsTrial?: boolean;
+  };
 };
 
 /**
@@ -84,6 +89,11 @@ export type InternalConfig = {
     color: string;
   };
   choices: string[];
+  timing: {
+    stimulusDuration: number;
+    trialDuration: number;
+    responseEndsTrial: boolean;
+  };
 };
 
 // Defaults
@@ -113,6 +123,11 @@ const DEFAULT_FIXATION_COLOR = 'white';
 
 // Choices default
 const DEFAULT_CHOICES = [' '];
+
+// Timing defaults
+const DEFAULT_TIMING_STIMULUS_DURATION = 0;
+const DEFAULT_TIMING_TRIAL_DURATION = 0;
+const DEFAULT_TIMING_RESPONSE_ENDS_TRIAL = true;
 
 /**
  * Takes a possibly incomplete config and fills in defaults where necessary
@@ -146,6 +161,11 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       color: DEFAULT_FIXATION_COLOR,
     },
     choices: DEFAULT_CHOICES,
+    timing: {
+      stimulusDuration: DEFAULT_TIMING_STIMULUS_DURATION,
+      trialDuration: DEFAULT_TIMING_TRIAL_DURATION,
+      responseEndsTrial: DEFAULT_TIMING_RESPONSE_ENDS_TRIAL,
+    },
   };
 
   // Then override if values are provided
@@ -241,6 +261,25 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       parsedConfig.background = providedConfig.background;
     }
   }
+
+  // Parse timing config
+  if (providedConfig.timing) {
+    // Override stimulus duration if provided
+    if (providedConfig.timing.stimulusDuration) {
+      parsedConfig.timing.stimulusDuration =
+        providedConfig.timing.stimulusDuration;
+    }
+    // Override trial duration if provided
+    if (providedConfig.timing.trialDuration) {
+      parsedConfig.timing.trialDuration = providedConfig.timing.trialDuration;
+    }
+    // Override response ends trial if provided
+    if (providedConfig.timing.responseEndsTrial) {
+      parsedConfig.timing.responseEndsTrial =
+        providedConfig.timing.responseEndsTrial;
+    }
+  }
+
   // Return the result
   return parsedConfig;
 };
