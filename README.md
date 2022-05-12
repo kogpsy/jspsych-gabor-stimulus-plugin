@@ -196,8 +196,11 @@ const gaborConf = {
     weight: 5,
     color: 'white',
   },
-  choices: [' '], // Space key
-  timing: {},
+  choices: [], // No keys
+  timing: {
+    trialDuration: 250,
+    responseEndsTrial: false,
+  },
 };
 ```
 
