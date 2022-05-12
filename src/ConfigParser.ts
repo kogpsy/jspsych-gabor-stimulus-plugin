@@ -122,7 +122,7 @@ const DEFAULT_FIXATION_WEIGHT = 5;
 const DEFAULT_FIXATION_COLOR = 'white';
 
 // Choices default
-const DEFAULT_CHOICES = [' '];
+const DEFAULT_CHOICES = [''];
 
 // Timing defaults
 const DEFAULT_TIMING_STIMULUS_DURATION = 0;
@@ -274,7 +274,7 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       parsedConfig.timing.trialDuration = providedConfig.timing.trialDuration;
     }
     // Override response ends trial if provided
-    if (providedConfig.timing.responseEndsTrial) {
+    if (providedConfig.timing.responseEndsTrial !== undefined) {
       parsedConfig.timing.responseEndsTrial =
         providedConfig.timing.responseEndsTrial;
     }

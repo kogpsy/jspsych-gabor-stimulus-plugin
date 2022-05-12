@@ -41,6 +41,15 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
   // Add static info
   static info = info;
 
+  // Class variables for data collection
+  private participantDidRespond: boolean = false;
+  private reactionTime: number = undefined;
+  private response: string = undefined;
+
+  // Class variables for stimulus and trial timeouts
+  private stimulusTimeout: NodeJS.Timeout = undefined;
+  private trialTimeout: NodeJS.Timeout = undefined;
+
   // Constructor
   constructor(private jsPsych: JsPsych) {
     // Bind jsPsych instance
@@ -97,24 +106,44 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // Then update the DOM
     display_element.innerHTML = tmpParent.innerHTML;
 
+    // Start trial duration clock. This will end the trial after the provided
+    // trial duration (if one was provided)
+    if (config.timing.trialDuration > 0) {
+      this.trialTimeout = setTimeout(() => {
+        // End trial
+        this.endTrial(
+          display_element,
+          config.background.type === 'animation',
+          animationLoop
+        );
+      }, config.timing.trialDuration);
+    }
+
+    // Start stimulus duration clock. This will hide the stimulus after the
+    // provided duration (if one was provided)
+    if (config.timing.stimulusDuration > 0) {
+      this.stimulusTimeout = setTimeout(() => {
+        // Hide the whole display element
+        display_element.style.opacity = '0';
+      }, config.timing.stimulusDuration);
+    }
+
     // Handler for key strokes
     const handleKeyResponse = (info: any) => {
-      // If the background is animated, end animation
-      if (config.background.type === 'animation') {
-        animationLoop?.stopLoop();
+      // Store data to class variable
+      if (!this.participantDidRespond) {
+        this.reactionTime = info.rt;
+        this.response = info.key;
       }
 
-      // Clear display
-      display_element.innerHTML = '';
-
-      // Create data object
-      const data = {
-        rt: info.rt,
-        response: info.key,
-      };
-
-      // End trial
-      this.jsPsych.finishTrial(data);
+      // End trial if response ends trial
+      if (config.timing.responseEndsTrial) {
+        this.endTrial(
+          display_element,
+          config.background.type === 'animation',
+          animationLoop
+        );
+      }
     };
 
     // Setup a listener to key strokes
@@ -122,6 +151,40 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
       callback_function: handleKeyResponse,
       valid_responses: config.choices,
       persist: false,
+    });
+  }
+
+  /**
+   * Clears the display element, stops the animation loop if running, and ends the
+   * trial.
+   *
+   * @param displayElement jsPsych display element
+   * @param backgroundIsAnimation Is the background animated?
+   * @param animationLoop AnimationLoop instance
+   */
+  endTrial(
+    display_element: HTMLElement,
+    backgroundIsAnimation: boolean,
+    animationLoop: AnimationLoop
+  ) {
+    // Clear timeouts if set
+    if (this.stimulusTimeout) {
+      clearTimeout(this.stimulusTimeout);
+    }
+    if (this.trialTimeout) {
+      clearTimeout(this.trialTimeout);
+    }
+    // Clear and reset display element
+    display_element.innerHTML = '';
+    display_element.style.opacity = '';
+    // If the background is animated, end animation
+    if (backgroundIsAnimation) {
+      animationLoop?.stopLoop();
+    }
+    // End trial
+    this.jsPsych.finishTrial({
+      rt: this.reactionTime,
+      response: this.response,
     });
   }
 }
