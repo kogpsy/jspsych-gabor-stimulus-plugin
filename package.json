@@ -3,11 +3,27 @@
   "description": "A jsPsych 7 plugin to generate gabor patches..",
   "version": "0.1.0",
   "main": "dist/jspsych-gabor-stimulus-plugin.js",
+  "typings": "dist/jspsych-gabor-stimulus-plugin.d.ts",
   "author": "Robin Bürkli <robuba.jr@gmx.ch>",
   "license": "MIT",
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kogpsy/jspsych-gabor-stimulus-plugin"
+  },
+  "keywords": [
+    "gabor",
+    "jsPsych",
+    "psychophysics",
+    "visual stimuli",
+    "experiments",
+    "psychology"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/jest": "^27.5.0",
     "@types/node": "^17.0.31",

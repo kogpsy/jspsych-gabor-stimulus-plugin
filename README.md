@@ -4,6 +4,14 @@ This project aims to provide a jsPsych plugin for generating gabor patch stimuli
 
 ## How to use
 
+### Install
+
+For now, the plugin can be installed from npm:
+
+```shell
+$ yarn add @kogpsy/jspsych-gabor-stimulus-plugin
+```
+
 ### Example
 
 ```javascript
