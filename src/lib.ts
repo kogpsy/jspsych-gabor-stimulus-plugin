@@ -11,5 +11,6 @@ import GaborStimulusPlugin from './GaborStimulusPlugin';
 import { ProvidedConfig as GaborStimulusPluginConfig } from './ConfigParser';
 
 export { generateNoise, generateNoiseFrames } from './NoiseGen';
+export { generateFixationCross } from './FixationCrossGen';
 export { GaborStimulusPluginConfig };
 export default GaborStimulusPlugin;
