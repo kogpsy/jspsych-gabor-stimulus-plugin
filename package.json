@@ -1,7 +1,7 @@
 {
   "name": "@kogpsy/jspsych-gabor-stimulus-plugin",
   "description": "A jsPsych 7 plugin to generate gabor patches..",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "main": "dist/jspsych-gabor-stimulus-plugin.js",
   "typings": "dist/jspsych-gabor-stimulus-plugin.d.ts",
   "author": "Robin Bürkli <robuba.jr@gmx.ch>",
