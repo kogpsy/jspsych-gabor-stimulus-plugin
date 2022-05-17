@@ -31,11 +31,10 @@ type Info = typeof info;
 /**
  * **gabor-stimulus-plugin**
  *
- * A jsPsych plugin to generate circular sine stimuli (also known as bullseye
- * stimuli).
+ * A jsPsych plugin to generate gabor patch stimuli.
  *
  * @author Robin Bürkli
- * @see {@link https://github.com/kogpsy/jspsych-circular-sine-stimulus-plugin Documentation}
+ * @see {@link https://github.com/kogpsy/jspsych-gabor-stimulus-plugin Documentation}
  */
 class GaborStimulusPlugin implements JsPsychPlugin<Info> {
   // Add static info
@@ -258,7 +257,7 @@ const setUpAnimationCanvas = (
 ): { canvas: HTMLCanvasElement; animationLoop: AnimationLoop } => {
   // Create the canvas to render the frames on
   const canvas = document.createElement('canvas');
-  canvas.id = 'circular-sine-stimulus-background';
+  canvas.id = 'gabor-stimulus-background';
 
   // Declare variables used in the animation function
   let frameIndex: number;
@@ -271,7 +270,7 @@ const setUpAnimationCanvas = (
     // point of the code lifecycle. I don't understand why, but retrieving the
     // instance in every frame is a functional workaround.
     const canvas = <HTMLCanvasElement>(
-      document.getElementById('circular-sine-stimulus-background')
+      document.getElementById('gabor-stimulus-background')
     );
 
     // Choose the next frame randomly until it is not the same frame as the
@@ -312,7 +311,7 @@ const setUpAnimationCanvas = (
  */
 const setUpContainer = (size: number): HTMLDivElement => {
   const container = document.createElement('div');
-  container.id = 'circular-sine-stimulus-container';
+  container.id = 'gabor-stimulus-container';
   container.style['position'] = 'relative';
   container.style['width'] = `${size}px`;
   container.style['height'] = `${size}px`;
