@@ -13,6 +13,7 @@ import AnimationLoop from './AnimationLoop';
 import { InternalConfig, parseConfig } from './ConfigParser';
 import { generateFixationCross } from './FixationCrossGen';
 import { generateGabor } from './GaborGen';
+import PluginEvent from './PluginEvent';
 
 // Define plugin info
 const info: any = <const>{
@@ -27,6 +28,8 @@ const info: any = <const>{
 
 // Derive type from plugin info
 type Info = typeof info;
+
+const domInitializedEvent = new PluginEvent();
 
 /**
  * **gabor-stimulus-plugin**
@@ -105,6 +108,9 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // Then update the DOM
     display_element.innerHTML = tmpParent.innerHTML;
 
+    // Trigger dom setup event
+    domInitializedEvent.trigger();
+
     // Start trial duration clock. This will end the trial after the provided
     // trial duration (if one was provided)
     if (config.timing.trialDuration > 0) {
@@ -124,6 +130,9 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
       this.stimulusTimeout = setTimeout(() => {
         // Hide the whole display element
         display_element.style.opacity = '0';
+        if (config.background.type === 'animation') {
+          animationLoop.stopLoop();
+        }
       }, config.timing.stimulusDuration);
     }
 
@@ -166,6 +175,8 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     backgroundIsAnimation: boolean,
     animationLoop: AnimationLoop
   ) {
+    // Clear dom initialized event
+    domInitializedEvent.clear();
     // Clear timeouts if set
     if (this.stimulusTimeout) {
       clearTimeout(this.stimulusTimeout);
@@ -237,7 +248,30 @@ const setUpBackground = (
 
   // If the requested background is a static image, set it accordingly
   else if (config.background.type === 'image') {
-    backgroundContainer.style.backgroundImage = `url("${config.background.source}")`;
+    // Create the canvas to render background image on
+    const canvas = document.createElement('canvas');
+    canvas.id = 'gabor-stimulus-background';
+    // Instanciate the image object which will be rendered onto the canvas
+    const image = new Image();
+    image.src = config.background.source;
+
+    // Set canvas size to image size
+    canvas.height = image.naturalHeight;
+    canvas.width = image.naturalWidth;
+
+    // When the dom has been initialized, grab the canvas and draw the
+    // background
+    domInitializedEvent.subscribe(() => {
+      // Get background. Must be done in this way, since the canvas is not added
+      // to the dom immediately.
+      const cv = document.getElementById('gabor-stimulus-background');
+      // And draw the image
+      (cv as HTMLCanvasElement).getContext('2d').drawImage(image, 0, 0);
+    });
+
+    // Finally, append background to container
+    backgroundContainer.appendChild(canvas);
+
     return { backgroundContainer };
   }
 };
@@ -293,7 +327,11 @@ const setUpAnimationCanvas = (
 
   // Instanciate the animation loop object and start the loop
   const animationLoop = new AnimationLoop(fps, animationFunction);
-  animationLoop.startLoop();
+
+  // Start the loop when the dom has been initialized completely
+  domInitializedEvent.subscribe(() => {
+    animationLoop.startLoop();
+  });
 
   // Return the canvas and the animation loop handle
   return {
