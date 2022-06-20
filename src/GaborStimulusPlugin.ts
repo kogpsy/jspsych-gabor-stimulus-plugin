@@ -23,6 +23,10 @@ const info: any = <const>{
       type: ParameterType.OBJECT,
       default: undefined,
     },
+    choices: {
+      type: ParameterType.KEYS,
+      default: [''],
+    },
   },
 };
 
@@ -64,6 +68,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
 
     // Parse the provided config into a consistent format
     const config: InternalConfig = parseConfig(trial.config);
+    const choices: string[] = trial.choices;
 
     // Create the container for everything
     const container = setUpContainer(config.stimulus.size);
@@ -157,7 +162,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // Setup a listener to key strokes
     this.jsPsych.pluginAPI.getKeyboardResponse({
       callback_function: handleKeyResponse,
-      valid_responses: config.choices,
+      valid_responses: choices,
       persist: false,
     });
   }

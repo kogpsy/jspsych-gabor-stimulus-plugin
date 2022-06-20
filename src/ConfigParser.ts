@@ -43,7 +43,6 @@ export type ProvidedConfig = {
     weight?: number;
     color?: string;
   };
-  choices?: string[];
   timing?: {
     stimulus_duration?: number;
     trial_duration?: number;
@@ -88,7 +87,6 @@ export type InternalConfig = {
     weight: number;
     color: string;
   };
-  choices: string[];
   timing: {
     stimulus_duration: number;
     trial_duration: number;
@@ -120,9 +118,6 @@ const DEFAULT_FIXATION_DISPLAY = false;
 const DEFAULT_FIXATION_SIZE = 30;
 const DEFAULT_FIXATION_WEIGHT = 5;
 const DEFAULT_FIXATION_COLOR = 'white';
-
-// Choices default
-const DEFAULT_CHOICES = [''];
 
 // Timing defaults
 const DEFAULT_TIMING_STIMULUS_DURATION = 0;
@@ -160,7 +155,6 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       weight: DEFAULT_FIXATION_WEIGHT,
       color: DEFAULT_FIXATION_COLOR,
     },
-    choices: DEFAULT_CHOICES,
     timing: {
       stimulus_duration: DEFAULT_TIMING_STIMULUS_DURATION,
       trial_duration: DEFAULT_TIMING_TRIAL_DURATION,
@@ -208,12 +202,6 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
     if (providedConfig.aperture.blur !== undefined) {
       parsedConfig.aperture.blur = providedConfig.aperture.blur;
     }
-  }
-
-  // Parse choices config
-  if (providedConfig.choices !== undefined) {
-    // Override choices if provided
-    parsedConfig.choices = providedConfig.choices;
   }
 
   // Parse fixation cross config
