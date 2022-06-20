@@ -156,18 +156,16 @@ These options are available:
 | `trial_duration`      | Time after which the trial is ended                               | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
 | `response_ends_trial` | Controls whether the trial is ended when the participant responds | Boolean                                            | `boolean` | `true`  |
 
-#### `choices`
+### Capturing keyboard responses
 
-The plugin is capable of capturing keyboard responses. To control allowed keys, the `choices` array is used. To allow the `F` and the `J` keys, for example, set the value of the `choices` key like that:
+As most of jsPsych's plugins, this plugin can capture keyboard responses. To control the allowed keys, the `choices` array is used (which **is not part** of the configuration object). To allow the `F` and the `J` keys, for example, set the value of the `choices` key like that:
 
 ```javascript
-const conf = {
-  // Your other options
-  // ...
-
-  // Set choices
+timeline.push({
+  type: GaborStimulusPlugin,
+  config: yourConfigObject,
   choices: ['f', 'j'],
-};
+});
 ```
 
 As for valid key codes, this plugin follows the conventions of other jsPsych plugins. The [jsPsych documentation on the KeyBoardResponsePlugin][2] states the following:
