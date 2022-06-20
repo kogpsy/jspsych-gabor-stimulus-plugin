@@ -26,7 +26,7 @@ const config = {
     size: 200,
     rotation: 45,
   },
-  fixationCross: {
+  fixation_cross: {
     size: 20,
     weight: 4,
     color: 'white',
@@ -63,7 +63,7 @@ const conf: GaborStimulusPluginConfig = {
   background: {
     // ...
   }
-  fixationCross: {
+  fixation_cross: {
     // ...
   },
   timing: {
@@ -81,14 +81,14 @@ The stimulus itself consists of alternating white and black lines. The transitio
 
 You can control the appearance of the stimulus using a multitude of parameters:
 
-| Field         | Description                                                        | Unit                   | Type     | Default    |
-| ------------- | ------------------------------------------------------------------ | ---------------------- | -------- | ---------- |
-| `size`        | Width and height of the gabor patch                                | Pixels                 | `number` | `200`      |
-| `density`     | Density of the gabor patch                                         | Sine curve repetitions | `number` | `5`        |
-| `phaseOffset` | Offset of the sine curve (and hence also color pattern)            | Degrees (0 to 359)     | `number` | `0`        |
-| `opacity`     | Opacity of the gabor patch                                         | Decimal (0 to 1)       | `number` | `1`        |
-| `rotation`    | Rotation of the gabor patch                                        | Degrees (0 to 359)     | `number` | `0`        |
-| `blendMode`   | [CSS blend mode][1] used to blend the stimulus onto the background | Blend mode name        | `string` | `"normal"` |
+| Field          | Description                                                        | Unit                   | Type     | Default    |
+| -------------- | ------------------------------------------------------------------ | ---------------------- | -------- | ---------- |
+| `size`         | Width and height of the gabor patch                                | Pixels                 | `number` | `200`      |
+| `density`      | Density of the gabor patch                                         | Sine curve repetitions | `number` | `5`        |
+| `phase_offset` | Offset of the sine curve (and hence also color pattern)            | Degrees (0 to 359)     | `number` | `0`        |
+| `opacity`      | Opacity of the gabor patch                                         | Decimal (0 to 1)       | `number` | `1`        |
+| `rotation`     | Rotation of the gabor patch                                        | Degrees (0 to 359)     | `number` | `0`        |
+| `blend_mode`   | [CSS blend mode][1] used to blend the stimulus onto the background | Blend mode name        | `string` | `"normal"` |
 
 #### `aperture`
 
@@ -101,7 +101,7 @@ You can control the aperture radius and blur using these parameters:
 | `radius` | Radius of the circular aperture                                    | Pixels                             | `number` | `stimulus.size / 4` |
 | `blur`   | Blur strength applied to the aperture using a Gaussian blur filter | Standard deviation of the gaussian | `number` | `stimulus.size / 8` |
 
-#### `fixationCross`
+#### `fixation_cross`
 
 There is the possibility to display a fixation cross in the middle of the stimulus. To do so, add a `fixationCross`key to the configuration object.
 
@@ -150,11 +150,11 @@ The timing of the stimulus and trial is pretty flexible. Stimulus timing corresp
 
 These options are available:
 
-| Field               | Description                                                       | Unit                                               | Type      | Default |
-| ------------------- | ----------------------------------------------------------------- | -------------------------------------------------- | --------- | ------- |
-| `stimulusDuration`  | Time during which the stimulus is displayed                       | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
-| `trialDuration`     | Time after which the trial is ended                               | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
-| `responseEndsTrial` | Controls whether the trial is ended when the participant responds | Boolean                                            | `boolean` | `true`  |
+| Field                 | Description                                                       | Unit                                               | Type      | Default |
+| --------------------- | ----------------------------------------------------------------- | -------------------------------------------------- | --------- | ------- |
+| `stimulus_duration`   | Time during which the stimulus is displayed                       | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
+| `trial_duration`      | Time after which the trial is ended                               | Milliseconds (`0` or negative values for infinite) | `number`  | `0`     |
+| `response_ends_trial` | Controls whether the trial is ended when the participant responds | Boolean                                            | `boolean` | `true`  |
 
 #### `choices`
 
@@ -186,9 +186,9 @@ const gaborConf = {
     size: 300,
     density: 6,
     opacity: 1,
-    phaseOffset: 0,
+    phase_offset: 0,
     rotation: 45,
-    blendMode: 'overlay',
+    blend_mode: 'overlay',
   },
   aperture: {
     radius: 100,
@@ -199,15 +199,15 @@ const gaborConf = {
     frames: backgroundFrames,
     fps: 10,
   },
-  fixationCross: {
+  fixation_cross: {
     size: 30,
     weight: 5,
     color: 'white',
   },
   choices: [], // No keys
   timing: {
-    trialDuration: 250,
-    responseEndsTrial: false,
+    trial_duration: 250,
+    response_ends_trial: false,
   },
 };
 ```
