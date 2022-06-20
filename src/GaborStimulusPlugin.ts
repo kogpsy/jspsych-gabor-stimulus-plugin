@@ -75,7 +75,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
       config.stimulus.density,
       config.stimulus.opacity,
       config.stimulus.rotation,
-      config.stimulus.blendMode,
+      config.stimulus.blend_mode,
       config.aperture.radius,
       config.aperture.blur
     );
@@ -90,12 +90,12 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     container.appendChild(backgroundContainer);
 
     // Add fixation cross if requested
-    if (config.fixationCross.display) {
+    if (config.fixation_cross.display) {
       const fixationCross = generateFixationCross(
         config.stimulus.size,
-        config.fixationCross.size,
-        config.fixationCross.weight,
-        config.fixationCross.color
+        config.fixation_cross.size,
+        config.fixation_cross.weight,
+        config.fixation_cross.color
       );
       container.appendChild(fixationCross);
     }
@@ -113,7 +113,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
 
     // Start trial duration clock. This will end the trial after the provided
     // trial duration (if one was provided)
-    if (config.timing.trialDuration > 0) {
+    if (config.timing.trial_duration > 0) {
       this.trialTimeout = setTimeout(() => {
         // End trial
         this.endTrial(
@@ -121,19 +121,19 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
           config.background.type === 'animation',
           animationLoop
         );
-      }, config.timing.trialDuration);
+      }, config.timing.trial_duration);
     }
 
     // Start stimulus duration clock. This will hide the stimulus after the
     // provided duration (if one was provided)
-    if (config.timing.stimulusDuration > 0) {
+    if (config.timing.stimulus_duration > 0) {
       this.stimulusTimeout = setTimeout(() => {
         // Hide the whole display element
         display_element.style.opacity = '0';
         if (config.background.type === 'animation') {
           animationLoop.stopLoop();
         }
-      }, config.timing.stimulusDuration);
+      }, config.timing.stimulus_duration);
     }
 
     // Handler for key strokes
@@ -145,7 +145,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
       }
 
       // End trial if response ends trial
-      if (config.timing.responseEndsTrial) {
+      if (config.timing.response_ends_trial) {
         this.endTrial(
           display_element,
           config.background.type === 'animation',

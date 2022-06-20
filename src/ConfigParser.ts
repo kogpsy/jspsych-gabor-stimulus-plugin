@@ -15,10 +15,10 @@ export type ProvidedConfig = {
   stimulus?: {
     size?: number;
     density?: number;
-    phaseOffset?: number;
+    phase_offset?: number;
     opacity?: number;
     rotation?: number;
-    blendMode?: string;
+    blend_mode?: string;
   };
   aperture?: {
     radius?: number;
@@ -38,16 +38,16 @@ export type ProvidedConfig = {
         type: 'image';
         source: string;
       };
-  fixationCross?: {
+  fixation_cross?: {
     size?: number;
     weight?: number;
     color?: string;
   };
   choices?: string[];
   timing?: {
-    stimulusDuration?: number;
-    trialDuration?: number;
-    responseEndsTrial?: boolean;
+    stimulus_duration?: number;
+    trial_duration?: number;
+    response_ends_trial?: boolean;
   };
 };
 
@@ -59,10 +59,10 @@ export type InternalConfig = {
   stimulus: {
     size: number;
     density: number;
-    phaseOffset: number;
+    phase_offset: number;
     opacity: number;
     rotation: number;
-    blendMode: string;
+    blend_mode: string;
   };
   aperture: {
     radius: number;
@@ -82,7 +82,7 @@ export type InternalConfig = {
         type: 'image';
         source: string;
       };
-  fixationCross: {
+  fixation_cross: {
     display: boolean;
     size: number;
     weight: number;
@@ -90,9 +90,9 @@ export type InternalConfig = {
   };
   choices: string[];
   timing: {
-    stimulusDuration: number;
-    trialDuration: number;
-    responseEndsTrial: boolean;
+    stimulus_duration: number;
+    trial_duration: number;
+    response_ends_trial: boolean;
   };
 };
 
@@ -141,10 +141,10 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
     stimulus: {
       size: DEFAULT_STMIULUS_SIZE,
       density: DEFAULT_STIMULUS_DENSITY,
-      phaseOffset: DEFAULT_STIMULUS_PHASE_OFFSET,
+      phase_offset: DEFAULT_STIMULUS_PHASE_OFFSET,
       opacity: DEFAULT_STIMULUS_OPACITY,
       rotation: DEFAULT_STIMULUS_ROTATION,
-      blendMode: DEFAULT_STIMULUS_BLEND_MODE,
+      blend_mode: DEFAULT_STIMULUS_BLEND_MODE,
     },
     aperture: {
       radius: DEFAULT_APERTURE_RADIUS,
@@ -154,7 +154,7 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       type: DEFAULT_BACKGROUND_TYPE,
       color: DEFAULT_BACKGROUND_COLOR,
     },
-    fixationCross: {
+    fixation_cross: {
       display: DEFAULT_FIXATION_DISPLAY,
       size: DEFAULT_FIXATION_SIZE,
       weight: DEFAULT_FIXATION_WEIGHT,
@@ -162,9 +162,9 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
     },
     choices: DEFAULT_CHOICES,
     timing: {
-      stimulusDuration: DEFAULT_TIMING_STIMULUS_DURATION,
-      trialDuration: DEFAULT_TIMING_TRIAL_DURATION,
-      responseEndsTrial: DEFAULT_TIMING_RESPONSE_ENDS_TRIAL,
+      stimulus_duration: DEFAULT_TIMING_STIMULUS_DURATION,
+      trial_duration: DEFAULT_TIMING_TRIAL_DURATION,
+      response_ends_trial: DEFAULT_TIMING_RESPONSE_ENDS_TRIAL,
     },
   };
 
@@ -181,8 +181,8 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       parsedConfig.stimulus.density = providedConfig.stimulus.density;
     }
     // Override stimulus phase offset if provided
-    if (providedConfig.stimulus.phaseOffset !== undefined) {
-      parsedConfig.stimulus.phaseOffset = providedConfig.stimulus.phaseOffset;
+    if (providedConfig.stimulus.phase_offset !== undefined) {
+      parsedConfig.stimulus.phase_offset = providedConfig.stimulus.phase_offset;
     }
     // Override stimulus opacity if provided
     if (providedConfig.stimulus.opacity !== undefined) {
@@ -193,8 +193,8 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
       parsedConfig.stimulus.rotation = providedConfig.stimulus.rotation;
     }
     // Override stimulus blend mode if provided
-    if (providedConfig.stimulus.blendMode !== undefined) {
-      parsedConfig.stimulus.blendMode = providedConfig.stimulus.blendMode;
+    if (providedConfig.stimulus.blend_mode !== undefined) {
+      parsedConfig.stimulus.blend_mode = providedConfig.stimulus.blend_mode;
     }
   }
 
@@ -217,20 +217,20 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
   }
 
   // Parse fixation cross config
-  if (providedConfig.fixationCross !== undefined) {
+  if (providedConfig.fixation_cross !== undefined) {
     // Override display
-    parsedConfig.fixationCross.display = true;
+    parsedConfig.fixation_cross.display = true;
     // Override fixation cross size if provided
-    if (providedConfig.fixationCross.size !== undefined) {
-      parsedConfig.fixationCross.size = providedConfig.fixationCross.size;
+    if (providedConfig.fixation_cross.size !== undefined) {
+      parsedConfig.fixation_cross.size = providedConfig.fixation_cross.size;
     }
     // Override fixation cross weight if provided
-    if (providedConfig.fixationCross.weight !== undefined) {
-      parsedConfig.fixationCross.weight = providedConfig.fixationCross.weight;
+    if (providedConfig.fixation_cross.weight !== undefined) {
+      parsedConfig.fixation_cross.weight = providedConfig.fixation_cross.weight;
     }
     // Override fixation cross color if provided
-    if (providedConfig.fixationCross.color !== undefined) {
-      parsedConfig.fixationCross.color = providedConfig.fixationCross.color;
+    if (providedConfig.fixation_cross.color !== undefined) {
+      parsedConfig.fixation_cross.color = providedConfig.fixation_cross.color;
     }
   }
 
@@ -267,18 +267,18 @@ export const parseConfig = (providedConfig: ProvidedConfig): InternalConfig => {
   // Parse timing config
   if (providedConfig.timing !== undefined) {
     // Override stimulus duration if provided
-    if (providedConfig.timing.stimulusDuration !== undefined) {
-      parsedConfig.timing.stimulusDuration =
-        providedConfig.timing.stimulusDuration;
+    if (providedConfig.timing.stimulus_duration !== undefined) {
+      parsedConfig.timing.stimulus_duration =
+        providedConfig.timing.stimulus_duration;
     }
     // Override trial duration if provided
-    if (providedConfig.timing.trialDuration !== undefined) {
-      parsedConfig.timing.trialDuration = providedConfig.timing.trialDuration;
+    if (providedConfig.timing.trial_duration !== undefined) {
+      parsedConfig.timing.trial_duration = providedConfig.timing.trial_duration;
     }
     // Override response ends trial if provided
-    if (providedConfig.timing.responseEndsTrial !== undefined) {
-      parsedConfig.timing.responseEndsTrial =
-        providedConfig.timing.responseEndsTrial;
+    if (providedConfig.timing.response_ends_trial !== undefined) {
+      parsedConfig.timing.response_ends_trial =
+        providedConfig.timing.response_ends_trial;
     }
   }
 
