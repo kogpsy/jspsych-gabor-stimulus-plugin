@@ -59,16 +59,16 @@ const conf: GaborStimulusPluginConfig = {
   },
   aperture: {
     // ...
-  }
+  },
   background: {
     // ...
-  }
+  },
   fixation_cross: {
     // ...
   },
   timing: {
     // ...
-  }
+  },
 };
 ```
 
