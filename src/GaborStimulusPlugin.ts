@@ -134,6 +134,9 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     if (config.timing.stimulus_duration > 0) {
       this.stimulusTimeout = setTimeout(() => {
         // Hide the whole display element
+
+        // NOTE: MUST BE SOMEWHERE HERE
+
         display_element.style.opacity = '0';
         if (config.background.type === 'animation') {
           animationLoop.stopLoop();

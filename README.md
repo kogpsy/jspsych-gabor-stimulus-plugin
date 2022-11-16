@@ -68,8 +68,7 @@ const conf: GaborStimulusPluginConfig = {
   },
   timing: {
     // ...
-  },
-  choices: [/* ... */]
+  }
 };
 ```
 
@@ -202,7 +201,6 @@ const gaborConf = {
     weight: 5,
     color: 'white',
   },
-  choices: [], // No keys
   timing: {
     trial_duration: 250,
     response_ends_trial: false,
