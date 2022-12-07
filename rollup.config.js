@@ -1,4 +1,5 @@
 import ts from '@rollup/plugin-typescript';
+import dts from 'rollup-plugin-dts';
 
 export default [
   {
@@ -12,5 +13,13 @@ export default [
     ],
     external: ['jspsych'],
     plugins: [ts()],
+  },
+  {
+    input: 'src/lib.ts',
+    output: {
+      file: 'dist/jspsych-gabor-stimulus-plugin.d.ts',
+      format: 'es',
+    },
+    plugins: [dts()],
   },
 ];
