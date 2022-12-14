@@ -7,19 +7,87 @@
  * License: GPL-3.0
  */
 
+// Import pixi
+import * as PIXI from 'pixi.js';
+
 // Import jsPsych related code
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from 'jspsych';
-import AnimationLoop from './AnimationLoop';
 import { InternalConfig, parseConfig } from './ConfigParser';
-import { generateFixationCross } from './FixationCrossGen';
-import { generateGabor } from './GaborGen';
-import PluginEvent from './PluginEvent';
+import { generateFixationCross } from './fixcross';
+import {
+  GaborConfig,
+  GaborPluginProvider,
+  parseConfig as parseGaborConfig,
+  ParsedGaborConfig,
+} from './provider/provider';
+import { generateGabor } from './provider/gabor';
+import { generateNoiseFrames } from './provider/noise';
+
+let pixiApplication: PIXI.Application<HTMLCanvasElement>;
+let gaborConfig: ParsedGaborConfig;
+
+export const initializeGaborPlugin = (config: GaborConfig) => {
+  const parsedConfig = parseGaborConfig(config);
+  gaborConfig = parsedConfig;
+  const { size, density, phaseOffset, blur } = parsedConfig;
+
+  // Create the pixi application
+  pixiApplication = new PIXI.Application<HTMLCanvasElement>({
+    width: size,
+    height: size,
+    backgroundAlpha: 0,
+    autoStart: false,
+  });
+
+  // Create the universal gabor patch
+  const gabor = generateGabor(
+    {
+      size,
+      density,
+      phaseOffset,
+      blur,
+    },
+    pixiApplication.renderer
+  );
+
+  // Generate noise frames
+  const noiseFrames = generateNoiseFrames({
+    size: size,
+    numberOfFrames: 100,
+    renderer: pixiApplication.renderer,
+  });
+
+  const noiseContainer = new PIXI.Container();
+  let noiseIndex = 0;
+  noiseContainer.addChild(noiseFrames[noiseIndex]);
+  pixiApplication.stage.addChild(noiseContainer);
+
+  pixiApplication.stage.addChild(gabor);
+
+  let elapsed = 0;
+
+  pixiApplication.ticker.add((dt: number) => {
+    elapsed += dt;
+
+    if (elapsed > 4) {
+      noiseContainer.removeChildren();
+      let newIndex: number;
+      do {
+        newIndex = Math.floor(Math.random() * noiseFrames.length);
+      } while (newIndex == noiseIndex);
+      noiseIndex = newIndex;
+      noiseContainer.addChild(noiseFrames[noiseIndex]);
+
+      elapsed = 0;
+    }
+  });
+};
 
 // Define plugin info
 const info: any = <const>{
   name: 'gabor-stimulus-plugin',
   parameters: {
-    config: {
+    options: {
       type: ParameterType.OBJECT,
       default: undefined,
     },
@@ -32,8 +100,6 @@ const info: any = <const>{
 
 // Derive type from plugin info
 type Info = typeof info;
-
-const domInitializedEvent = new PluginEvent();
 
 /**
  * **gabor-stimulus-plugin**
@@ -63,6 +129,12 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
   }
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
+    if (!pixiApplication || !gaborConfig) {
+      throw Error(
+        'You must call the initializeGaborPlugin() method before adding trial to the timeline.'
+      );
+    }
+
     // First clear the display element
     display_element.innerHTML = '';
 
@@ -70,34 +142,16 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     const config: InternalConfig = parseConfig(trial.config);
     const choices: string[] = trial.choices;
 
+    pixiApplication.start();
+
     // Create the container for everything
-    const container = setUpContainer(config.stimulus.size);
-
-    // Generate the stimulus as SVG
-    const svg = generateGabor(
-      config.stimulus.size,
-      config.stimulus.density,
-      config.stimulus.density,
-      config.stimulus.opacity,
-      config.stimulus.rotation,
-      config.stimulus.blend_mode,
-      config.aperture.radius,
-      config.aperture.blur
-    );
-
-    // Add SVG to container
-    container.appendChild(svg);
-
-    // Create the background based on the received properties
-    const { backgroundContainer, animationLoop } = setUpBackground(config);
-
-    // Add canvas to container
-    container.appendChild(backgroundContainer);
+    const container = setUpContainer(gaborConfig.size);
+    container.appendChild(pixiApplication.view);
 
     // Add fixation cross if requested
     if (config.fixation_cross.display) {
       const fixationCross = generateFixationCross(
-        config.stimulus.size,
+        gaborConfig.size,
         config.fixation_cross.size,
         config.fixation_cross.weight,
         config.fixation_cross.color
@@ -113,19 +167,12 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // Then update the DOM
     display_element.innerHTML = tmpParent.innerHTML;
 
-    // Trigger dom setup event
-    domInitializedEvent.trigger();
-
     // Start trial duration clock. This will end the trial after the provided
     // trial duration (if one was provided)
     if (config.timing.trial_duration > 0) {
       this.trialTimeout = setTimeout(() => {
         // End trial
-        this.endTrial(
-          display_element,
-          config.background.type === 'animation',
-          animationLoop
-        );
+        this.endTrial(display_element, pixiApplication.stop);
       }, config.timing.trial_duration);
     }
 
@@ -134,13 +181,8 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     if (config.timing.stimulus_duration > 0) {
       this.stimulusTimeout = setTimeout(() => {
         // Hide the whole display element
-
-        // NOTE: MUST BE SOMEWHERE HERE
-
         display_element.style.opacity = '0';
-        if (config.background.type === 'animation') {
-          animationLoop.stopLoop();
-        }
+        pixiApplication.stop();
       }, config.timing.stimulus_duration);
     }
 
@@ -154,11 +196,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
 
       // End trial if response ends trial
       if (config.timing.response_ends_trial) {
-        this.endTrial(
-          display_element,
-          config.background.type === 'animation',
-          animationLoop
-        );
+        this.endTrial(display_element, pixiApplication.stop);
       }
     };
 
@@ -178,13 +216,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
    * @param backgroundIsAnimation Is the background animated?
    * @param animationLoop AnimationLoop instance
    */
-  endTrial(
-    display_element: HTMLElement,
-    backgroundIsAnimation: boolean,
-    animationLoop: AnimationLoop
-  ) {
-    // Clear dom initialized event
-    domInitializedEvent.clear();
+  endTrial(display_element: HTMLElement, stopRender: () => void) {
     // Clear timeouts if set
     if (this.stimulusTimeout) {
       clearTimeout(this.stimulusTimeout);
@@ -195,10 +227,8 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     // Clear and reset display element
     display_element.innerHTML = '';
     display_element.style.opacity = '';
-    // If the background is animated, end animation
-    if (backgroundIsAnimation) {
-      animationLoop?.stopLoop();
-    }
+    // Stop pixi render
+    stopRender();
     // End trial
     this.jsPsych.finishTrial({
       rt: this.reactionTime,
@@ -206,147 +236,6 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     });
   }
 }
-
-/**
- * Sets up the background of the stimulus based on the plugin configuration
- *
- * @param config Configuration of the plugin
- * @returns An object containing the background container as an HTMLDivElement
- * and if an animation was requested an AnimationLoop object (which can be used
- * to start and stop the animation)
- */
-const setUpBackground = (
-  config: InternalConfig
-): {
-  backgroundContainer: HTMLDivElement;
-  animationLoop?: AnimationLoop;
-} => {
-  // Create background container div and add css
-  const backgroundContainer = document.createElement('div');
-  backgroundContainer.style.position = 'absolute';
-  backgroundContainer.style.left = '0';
-  backgroundContainer.style.top = '0';
-  backgroundContainer.style.width = '100%';
-  backgroundContainer.style.height = '100%';
-
-  // If the requested background is an animation
-  if (config.background.type === 'animation') {
-    // Set up the animation loop and canvas
-    const { canvas, animationLoop } = setUpAnimationCanvas(
-      config.background.frames,
-      config.background.fps
-    );
-    // And add the canvas to the background container
-    backgroundContainer.appendChild(canvas);
-
-    // Return container and loop object
-    return {
-      backgroundContainer,
-      animationLoop,
-    };
-  }
-
-  // If the requested background is a css color, set it accordingly
-  else if (config.background.type === 'css-color') {
-    backgroundContainer.style.backgroundColor = config.background.color;
-    return {
-      backgroundContainer,
-    };
-  }
-
-  // If the requested background is a static image, set it accordingly
-  else if (config.background.type === 'image') {
-    // Create the canvas to render background image on
-    const canvas = document.createElement('canvas');
-    canvas.id = 'gabor-stimulus-background';
-    // Instanciate the image object which will be rendered onto the canvas
-    const image = new Image();
-    image.src = config.background.source;
-
-    // Set canvas size to image size
-    canvas.height = image.naturalHeight;
-    canvas.width = image.naturalWidth;
-
-    // When the dom has been initialized, grab the canvas and draw the
-    // background
-    domInitializedEvent.subscribe(() => {
-      // Get background. Must be done in this way, since the canvas is not added
-      // to the dom immediately.
-      const cv = document.getElementById('gabor-stimulus-background');
-      // And draw the image
-      (cv as HTMLCanvasElement).getContext('2d').drawImage(image, 0, 0);
-    });
-
-    // Finally, append background to container
-    backgroundContainer.appendChild(canvas);
-
-    return { backgroundContainer };
-  }
-};
-
-/**
- * Creates an HTMLCanvasElement and an AnimationLoop instance based on params
- *
- * @param frames An array of data urls / paths which will be used as the frames
- * of the animation
- * @param fps Speed of the animation (frames per second)
- * @returns An object containing an HTMLCanvasElement and an AnimationLoop
- * instance to start and stop the animation
- */
-const setUpAnimationCanvas = (
-  frames: string[],
-  fps: number
-): { canvas: HTMLCanvasElement; animationLoop: AnimationLoop } => {
-  // Create the canvas to render the frames on
-  const canvas = document.createElement('canvas');
-  canvas.id = 'gabor-stimulus-background';
-
-  // Declare variables used in the animation function
-  let frameIndex: number;
-  let newFrameIndex: number;
-
-  // Define the animation function (will be called by the AnimationLoop at a
-  // certain FPS)
-  const animationFunction = () => {
-    // For some reason the canvas element created above is undefined at this
-    // point of the code lifecycle. I don't understand why, but retrieving the
-    // instance in every frame is a functional workaround.
-    const canvas = <HTMLCanvasElement>(
-      document.getElementById('gabor-stimulus-background')
-    );
-
-    // Choose the next frame randomly until it is not the same frame as the
-    // currently displayed
-    do {
-      newFrameIndex = Math.floor(Math.random() * frames.length);
-    } while (newFrameIndex === frameIndex);
-    frameIndex = newFrameIndex;
-
-    // Instanciate the image object which will be rendered onto the canvas
-    const image = new Image();
-    image.src = frames[frameIndex];
-
-    // Set canvas size to image size
-    canvas.height = image.naturalHeight;
-    canvas.width = image.naturalWidth;
-    // And draw the image
-    canvas.getContext('2d').drawImage(image, 0, 0);
-  };
-
-  // Instanciate the animation loop object and start the loop
-  const animationLoop = new AnimationLoop(fps, animationFunction);
-
-  // Start the loop when the dom has been initialized completely
-  domInitializedEvent.subscribe(() => {
-    animationLoop.startLoop();
-  });
-
-  // Return the canvas and the animation loop handle
-  return {
-    canvas,
-    animationLoop,
-  };
-};
 
 /**
  * Creates an HTMLDivElement to be used as the stimulus and background

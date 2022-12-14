@@ -11,7 +11,7 @@ export default [
         format: 'es',
       },
     ],
-    external: ['jspsych'],
+    external: ['jspsych', 'pixi.js'],
     plugins: [ts()],
   },
   {

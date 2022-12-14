@@ -1,5 +1,11 @@
 # jspsych-gabor-stimulus-plugin
 
+## Note on WebGL
+
+jsPsych plugin params are seriously messed up. Functions get evaluated, more complex objects are not getting to my plugin and somehow, parameters cannot contain circular references (as a pixi.js app object does, e.g.). For that reason, it's not possible to pass my provider thingy as a plugin param. It just came to me that I could try to abstract the creation of the plugin class somehow. So that when the module gets loaded, pixi is initialized and then the plugin class (which has access to pixi as it's in the same module) is exported. But I wonder how that would behave when it's imported multiple times - check that since it foundatinal knowledge anyways.
+
+---
+
 This project aims to provide a jsPsych plugin for generating gabor patch stimuli. Once it reaches reasonable stability, test coverage and usability, it will be proposed to the jsPsych team for integration into the main codebase.
 
 ## How to use
