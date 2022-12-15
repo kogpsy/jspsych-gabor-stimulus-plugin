@@ -23,21 +23,28 @@ import {
 import { generateGabor } from './provider/gabor';
 import { generateNoiseFrames } from './provider/noise';
 
-let pixiApplication: PIXI.Application<HTMLCanvasElement>;
-let gaborConfig: ParsedGaborConfig;
+// Create the dom element which will hold the pixi canvas
+const pixiContainer = document.createElement('div');
 
-export const initializeGaborPlugin = (config: GaborConfig) => {
+// Create the pixi application
+const pixiApplication = new PIXI.Application<HTMLCanvasElement>({
+  backgroundAlpha: 0,
+  autoStart: false,
+  resizeTo: pixiContainer,
+});
+
+pixiContainer.appendChild(pixiApplication.view);
+
+const gabors: {
+  id: string;
+  size: number;
+  gabor: PIXI.Container<PIXI.DisplayObject>;
+  noiseFrames: PIXI.Sprite[];
+}[] = [];
+
+export const pregenerateGabor = (id: string, config: GaborConfig) => {
   const parsedConfig = parseGaborConfig(config);
-  gaborConfig = parsedConfig;
   const { size, density, phaseOffset, blur } = parsedConfig;
-
-  // Create the pixi application
-  pixiApplication = new PIXI.Application<HTMLCanvasElement>({
-    width: size,
-    height: size,
-    backgroundAlpha: 0,
-    autoStart: false,
-  });
 
   // Create the universal gabor patch
   const gabor = generateGabor(
@@ -50,36 +57,19 @@ export const initializeGaborPlugin = (config: GaborConfig) => {
     pixiApplication.renderer
   );
 
-  // Generate noise frames
+  // Generate noise frames in case noise background is requested
   const noiseFrames = generateNoiseFrames({
     size: size,
     numberOfFrames: 100,
     renderer: pixiApplication.renderer,
   });
 
-  const noiseContainer = new PIXI.Container();
-  let noiseIndex = 0;
-  noiseContainer.addChild(noiseFrames[noiseIndex]);
-  pixiApplication.stage.addChild(noiseContainer);
-
-  pixiApplication.stage.addChild(gabor);
-
-  let elapsed = 0;
-
-  pixiApplication.ticker.add((dt: number) => {
-    elapsed += dt;
-
-    if (elapsed > 4) {
-      noiseContainer.removeChildren();
-      let newIndex: number;
-      do {
-        newIndex = Math.floor(Math.random() * noiseFrames.length);
-      } while (newIndex == noiseIndex);
-      noiseIndex = newIndex;
-      noiseContainer.addChild(noiseFrames[noiseIndex]);
-
-      elapsed = 0;
-    }
+  // Store the gabor to module instance
+  gabors.push({
+    id,
+    size,
+    gabor,
+    noiseFrames,
   });
 };
 
@@ -87,6 +77,7 @@ export const initializeGaborPlugin = (config: GaborConfig) => {
 const info: any = <const>{
   name: 'gabor-stimulus-plugin',
   parameters: {
+    gaborId: ParameterType.STRING,
     options: {
       type: ParameterType.OBJECT,
       default: undefined,
@@ -129,9 +120,9 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
   }
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
-    if (!pixiApplication || !gaborConfig) {
+    if (gabors.length === 0) {
       throw Error(
-        'You must call the initializeGaborPlugin() method before adding trial to the timeline.'
+        'You must pregenerate at least one gabor using the pregenerateGabor() function.'
       );
     }
 
@@ -139,19 +130,59 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
     display_element.innerHTML = '';
 
     // Parse the provided config into a consistent format
-    const config: InternalConfig = parseConfig(trial.config);
+    const config: InternalConfig = parseConfig(trial.options);
     const choices: string[] = trial.choices;
+
+    // Grab gabor
+    const gabor = gabors.find((g) => {
+      return g.id === trial.gaborId;
+    });
+
+    // Setup pixi container
+    pixiContainer.style.width = `${gabor.size}px`;
+    pixiContainer.style.height = `${gabor.size}px`;
+
+    // Setup Pixi
+    pixiApplication.stage.removeChildren();
+
+    const noiseContainer = new PIXI.Container();
+    let noiseIndex = 0;
+    noiseContainer.addChild(gabor.noiseFrames[noiseIndex]);
+    pixiApplication.stage.addChild(noiseContainer);
+
+    pixiApplication.stage.addChild(gabor.gabor);
+
+    gabor.gabor.alpha = config.stimulus.visibility;
+    gabor.gabor.rotation = ((Math.PI * 2) / 360) * config.stimulus.rotation;
+
+    let elapsed = 0;
+
+    pixiApplication.ticker.add((dt: number) => {
+      elapsed += dt;
+
+      if (elapsed > 4) {
+        noiseContainer.removeChildren();
+        let newIndex: number;
+        do {
+          newIndex = Math.floor(Math.random() * gabor.noiseFrames.length);
+        } while (newIndex == noiseIndex);
+        noiseIndex = newIndex;
+        noiseContainer.addChild(gabor.noiseFrames[noiseIndex]);
+
+        elapsed = 0;
+      }
+    });
 
     pixiApplication.start();
 
     // Create the container for everything
-    const container = setUpContainer(gaborConfig.size);
-    container.appendChild(pixiApplication.view);
+    const container = setUpContainer(gabor.size);
+    container.appendChild(pixiContainer);
 
     // Add fixation cross if requested
     if (config.fixation_cross.display) {
       const fixationCross = generateFixationCross(
-        gaborConfig.size,
+        gabor.size,
         config.fixation_cross.size,
         config.fixation_cross.weight,
         config.fixation_cross.color
@@ -161,11 +192,12 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
 
     // Create a temporary parent div, since the DOM only seems to get updated
     // when setting the new elements using innerHTML(), but not append.
-    const tmpParent = document.createElement('div');
-    tmpParent.appendChild(container);
+    /* const tmpParent = document.createElement('div');
+    tmpParent.appendChild(pixiContainer); */
 
     // Then update the DOM
-    display_element.innerHTML = tmpParent.innerHTML;
+    display_element.appendChild(container);
+    pixiApplication.resize();
 
     // Start trial duration clock. This will end the trial after the provided
     // trial duration (if one was provided)

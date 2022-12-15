@@ -7,7 +7,7 @@
  * This is the entrypoint to the library.
  */
 
-import GaborStimulusPlugin from './GaborStimulusPlugin';
+import GaborStimulusPlugin, { pregenerateGabor } from './GaborStimulusPlugin';
 import { ProvidedConfig as GaborStimulusPluginConfig } from './ConfigParser';
 
 export { generateFixationCross } from './fixcross';
@@ -17,5 +17,7 @@ export {
   createGaborPluginProvider,
   GaborConfig as GaborPluginProviderConfig,
 } from './provider/provider';
+
+export { pregenerateGabor };
 
 export default GaborStimulusPlugin;
