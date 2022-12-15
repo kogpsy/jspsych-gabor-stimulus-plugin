@@ -6,6 +6,10 @@ jsPsych plugin params are seriously messed up. Functions get evaluated, more com
 
 ---
 
+Maybe the best way is to have Application instantiated once per module (so just once at all). Then consumers can use something like `generateGabor('small', { size: 200 })` to add a generated gabor to the module instance. Then when using the gabors, they could just specify which gabor id this particular plugin instance should use.
+
+---
+
 This project aims to provide a jsPsych plugin for generating gabor patch stimuli. Once it reaches reasonable stability, test coverage and usability, it will be proposed to the jsPsych team for integration into the main codebase.
 
 ## How to use
