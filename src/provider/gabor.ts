@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from 'pixi.js';
 
 type GaborConfig = {
   /** Size of the gabor in pixels */
@@ -70,11 +70,9 @@ const getGaussianMask = (
     .endFill();
   circle.filters = [new PIXI.filters.BlurFilter(effectiveBlur, 32)];
   // Generate a texture from the graphics for faster rendering
-  // FIXME: Weird TS error here, according to API ref everything's correct
-  // @ts-ignore
   const texture = renderer.generateTexture(circle, {
     region: new PIXI.Rectangle(0, 0, size, size),
-  }) as PIXI.RenderTexture;
+  });
   const sprite = new PIXI.Sprite(texture);
 
   return sprite;
@@ -104,9 +102,7 @@ const getSinusoid = (
     gabor.endFill();
   }
   // Generate a texture from the graphics for faster rendering
-  // FIXME: Weird TS error here, according to API ref everything's correct
-  // @ts-ignore
-  const texture = renderer.generateTexture(gabor) as PIXI.RenderTexture;
+  const texture = renderer.generateTexture(gabor);
   return new PIXI.Sprite(texture);
 };
 

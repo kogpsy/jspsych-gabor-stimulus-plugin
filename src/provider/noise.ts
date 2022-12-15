@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from 'pixi.js';
 
 type NoiseConfig = {
   size: number;
@@ -18,10 +18,7 @@ export const generateNoiseFrames = ({
     graphic.drawRect(0, 0, size, size);
     graphic.endFill();
 
-    // FIXME: Pixi bug. Should be fixed in 7.1.0
-    // https://github.com/pixijs/pixijs/issues/8947
-    // @ts-ignore
-    const texture = renderer.generateTexture(graphic) as PIXI.RenderTexture;
+    const texture = renderer.generateTexture(graphic);
     const sprite = new PIXI.Sprite(texture);
 
     sprite.filters = [new PIXI.filters.NoiseFilter(1, Math.random())];
