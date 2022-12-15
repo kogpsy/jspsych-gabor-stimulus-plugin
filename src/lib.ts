@@ -8,16 +8,10 @@
  */
 
 import GaborStimulusPlugin, { pregenerateGabor } from './GaborStimulusPlugin';
-import { ProvidedConfig as GaborStimulusPluginConfig } from './ConfigParser';
+import { ProvidedConfig as GaborPluginConfig } from './PluginConfigParser';
+import { GaborConfig as GaborStimulusConfig } from './GaborConfigParser';
 
-export { generateFixationCross } from './fixcross';
-export { GaborStimulusPluginConfig };
-
-export {
-  createGaborPluginProvider,
-  GaborConfig as GaborPluginProviderConfig,
-} from './provider/provider';
-
-export { pregenerateGabor };
+export { generateFixationCrossTrial } from './FixationCross';
+export { GaborPluginConfig, GaborStimulusConfig, pregenerateGabor };
 
 export default GaborStimulusPlugin;

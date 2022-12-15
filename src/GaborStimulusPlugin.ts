@@ -12,16 +12,14 @@ import * as PIXI from 'pixi.js';
 
 // Import jsPsych related code
 import { JsPsych, JsPsychPlugin, ParameterType, TrialType } from 'jspsych';
-import { InternalConfig, parseConfig } from './ConfigParser';
-import { generateFixationCross } from './fixcross';
+import { InternalConfig, parseConfig } from './PluginConfigParser';
+import { generateFixationCross } from './FixationCross';
 import {
   GaborConfig,
-  GaborPluginProvider,
   parseConfig as parseGaborConfig,
-  ParsedGaborConfig,
-} from './provider/provider';
-import { generateGabor } from './provider/gabor';
-import { generateNoiseFrames } from './provider/noise';
+} from './GaborConfigParser';
+import { generateGabor } from './Gabor';
+import { generateNoiseFrames } from './Noise';
 
 // Create the dom element which will hold the pixi canvas
 const pixiContainer = document.createElement('div');
@@ -187,7 +185,7 @@ class GaborStimulusPlugin implements JsPsychPlugin<Info> {
         config.fixation_cross.weight,
         config.fixation_cross.color
       );
-      container.appendChild(fixationCross);
+      pixiApplication.stage.addChild(fixationCross);
     }
 
     // Create a temporary parent div, since the DOM only seems to get updated
